@@ -123,6 +123,7 @@ bot.dialog('dictationDialog', [
 bot.dialog('pictureDialog', [
     function (session, args) {
         builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
+        builder.Prompts.text(session, "WAT :(");
     },
     function (session, results, next) {
         var categories = ["Animals", "Travel", "Colours", "Clothes"];
