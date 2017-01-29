@@ -15,7 +15,7 @@ var bot = new builder.UniversalBot(connector);
 
 bot.dialog('/', [
     function (session) {
-        session.send("Hello... I'm a decision bot.");
+        session.send("Hello, Let's do some cool stuff today...");
         session.beginDialog('rootMenu');
     },
     function (session, results) {
@@ -26,7 +26,7 @@ bot.dialog('/', [
 // Add root menu dialog
 bot.dialog('rootMenu', [
     function (session) {
-        builder.Prompts.choice(session, "Choose an option:", 'Flip A Coin|Roll Dice|Magic 8-Ball|Quit');
+        builder.Prompts.choice(session, "Choose an option:", 'Flip A Coin|Roll Dice|Magic 8-Ball|Dictation practice|Picture game|Quit');
     },
     function (session, results) {
         switch (results.response.index) {
@@ -38,6 +38,12 @@ bot.dialog('rootMenu', [
                 break;
             case 2:
                 session.beginDialog('magicBallDialog');
+                break;
+            case 3:
+                session.beginDialog('dictationDialog');
+                break;
+            case 4:
+                session.beginDialog('pictureDialog');
                 break;
             default:
                 session.endDialog();
@@ -94,6 +100,22 @@ bot.dialog('magicBallDialog', [
         session.endDialog(magicAnswers);
     }
 ]);
+
+// Dictation Practice
+bot.dialog('dictationDialog', [
+    function (session){
+        //TODO: Dictation!!!
+        builder.Prompts.text(session, "We will be implemented!");
+    }
+]);
+
+// Picture game
+bot.dialog('pictureDialog', {
+    //TODO: MORE FREQUENT COMMITTSSSSSS
+    function (session, args){
+        //session
+    }
+});
 
 var magicAnswers = [
     "It is certain",
