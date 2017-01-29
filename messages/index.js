@@ -1,6 +1,8 @@
 "use strict";
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
+var utils = require(utils);
+var $ = require(jQuery);
 
 var useEmulator = (process.env.NODE_ENV == 'development');
 
@@ -114,13 +116,16 @@ bot.dialog('dictationDialog', [
 
 bot.dialog('pictureDialog', [
      function (session, args) {
-        builder.Prompts.text(session, "What is your question?");
+        builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
     },
     function (session, results) {
-        // Use the SDK's built-in ability to pick a response at random.
-        session.endDialog(magicAnswers);
+        session.endDialog(imageSearch(results.response.index));    
+    },
+    function (session) {
+        // Reload menu
+        session.replaceDialog('rootMenu');
     }
-]);
+]).reloadAction('showMenu', null, { matches: /^(menu|back)/i });
 
 var magicAnswers = [
     "It is certain",
