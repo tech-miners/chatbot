@@ -126,6 +126,7 @@ bot.dialog('pictureDialog', [
         builder.Prompts.text(session, "WAT :(");
     },
     function (session, results, next) {
+        builder.Prompts.text(session, "WAT 0");
         var categories = ["Animals", "Travel", "Colours", "Clothes"];
         var q = categories[results.response.index];
         var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q='+q+'&count=1&offest=0&mkt=en-us&safeSearch=Strict';
@@ -138,6 +139,7 @@ bot.dialog('pictureDialog', [
                 }   
             });
 
+        builder.Prompts.text(session, "WAT 1");
         var obj = JSON.parse(res.getBody());
         var imageUrl = obj.value[0].contentUrl;
         msg = new builder.Message(session)
@@ -146,6 +148,7 @@ bot.dialog('pictureDialog', [
                 contentType: "image/jpeg",
                 contentUrl: imageUrl
             }]);
+            builder.Prompts.text(session, "WAT 2");
         session.send(typeof (msg) != "undefined" ? msg : "bye");
         session.beginDialog('guessDialog');
     }
