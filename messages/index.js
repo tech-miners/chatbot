@@ -2,6 +2,7 @@
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
 var request = require('request');
+var qs = require('querystring');
 
 
 var useEmulator = (process.env.NODE_ENV == 'development');
@@ -17,6 +18,8 @@ var bot = new builder.UniversalBot(connector);
 
 bot.dialog('/', [
     function (session) {
+       
+
         session.send("Hello, Let's do some cool stuff today...");
         session.beginDialog('rootMenu');
     },
@@ -120,15 +123,18 @@ bot.dialog('pictureDialog', [
     },
     function (session, results) {
 
-        var url = "https://api.cognitive.microsoft.com/bing/v5.0/images/search?";
+        var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?';
+        var categories = ["Animals","Travel","Colours","Clothes"];
         
-        request({
+        request
+        ({
             headers: {
-                "Ocp-Apim-Subscription-Key":"c1c3171e40a84965bd28375ea50f12ef"
+                'Ocp-Apim-Subscription-Key':'c1c3171e40a84965bd28375ea50f12ef'
             },
             uri: url,
-            body: {
-                "q": imageSearch(results.response.index),
+         qs: {
+                "q": categories[results.response.index],
+                //"q": "cow",
                 "count": "1",
                 "offset": "0",
                 "mkt": "en-us",
@@ -137,8 +143,11 @@ bot.dialog('pictureDialog', [
             method: 'GET'
             }, function (err, res, body){
                 //it works!
-                session.endDialog("WAT");    
-        });
+                var obj = JSON.parse(body);
+                
+                //var arr = JSON.parse(obj);
+                session.endDialog(obj.value[0].contentUrl);    
+        });        
         session.endDialog("I work....");    
     },
     function (session) {
