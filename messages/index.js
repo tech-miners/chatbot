@@ -63,6 +63,7 @@ bot.dialog('rootMenu', [
 bot.dialog('flipCoinDialog', [
     function (session, args) {
         builder.Prompts.choice(session, "Choose heads or tails.", "heads|tails", { listStyle: builder.ListStyle.none })
+        session.Prompts.text("WAAAAT");
     },
     function (session, results) {
         var flip = Math.random() > 0.5 ? 'heads' : 'tails';
@@ -117,11 +118,10 @@ bot.dialog('dictationDialog', [
 
 bot.dialog('pictureDialog', [
     function (session, args) {
-        
         builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
     },
     function (session, results, next) {
-        session.send('WAT0');
+        // session.send('WAT0');
         var categories = ["Animals", "Travel", "Colours", "Clothes"];
         var q = categories[results.response.index];
         var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q='+q+'&count=1&offest=0&mkt=en-us&safeSearch=Strict';
@@ -134,7 +134,7 @@ bot.dialog('pictureDialog', [
                     'Ocp-Apim-Subscription-Key': 'c1c3171e40a84965bd28375ea50f12ef'
                 }   
             });
-            session.send('WAT1');
+            // session.send('WAT1');
         var obj = JSON.parse(res.getBody());
         var imageUrl = obj.value[0].contentUrl;
         msg = new builder.Message(session)
@@ -143,7 +143,7 @@ bot.dialog('pictureDialog', [
                 contentType: "image/jpeg",
                 contentUrl: imageUrl
             }]);
-            session.send('WAT2');
+            // session.send('WAT2');
         session.send(typeof (msg) != "undefined" ? msg : "bye");
         
         session.beginDialog('guessDialog');
