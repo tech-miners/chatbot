@@ -3,7 +3,6 @@ var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
 var request = require('request');
 var qs = require('querystring');
-var flag = false;
 
 var useEmulator = (process.env.NODE_ENV == 'development');
 
@@ -123,7 +122,7 @@ bot.dialog('pictureDialog', [
         builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
     },
     function (session, results) {
-    flag = true;
+        var msg = "I work";
         var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?';
         var categories = ["Animals","Travel","Colours","Clothes"];
         
@@ -149,16 +148,15 @@ bot.dialog('pictureDialog', [
                 
                 //var arr = JSON.parse(obj);
                 var imageUrl = obj.value[0].contentUrl;
-                var msg = new builder.Message(session)
+                msg = new builder.Message(session)
                     .text("Here you go:")
                     .attachments([{
                         contentType: "image/jpeg",
                         contentUrl: imageUrl
                 }]);
                 session.endDialog(msg);   
-                flag = false; 
         });        
-        session.endDialog("I work....");    
+        session.endDialog(msg);    
     },
     function (session) {
         // Reload menu
