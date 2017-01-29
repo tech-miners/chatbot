@@ -155,7 +155,7 @@ bot.dialog('pictureDialog', [
                         contentType: "image/jpeg",
                         contentUrl: imageUrl
                 }]);
-                session.endDialog();   
+                session.endDialog(msg);   
                 flag = false; 
         });        
         session.endDialog("I work....");    
