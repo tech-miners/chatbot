@@ -1,9 +1,9 @@
-// "use strict";
+"use strict";
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
-// var request = require('request');
+var request = require('request');
 var qs = require('querystring');
-var request = require('sync-request');
+var flag = false;
 
 var useEmulator = (process.env.NODE_ENV == 'development');
 
@@ -18,10 +18,11 @@ var bot = new builder.UniversalBot(connector);
 
 bot.dialog('/', [
     function (session) {
-
-
+       
+if (!flag) {
         session.send("Hello, Let's do some cool stuff today...");
         session.beginDialog('rootMenu');
+}
     },
     function (session, results) {
         session.endConversation("Goodbye until next time...");
@@ -57,12 +58,9 @@ bot.dialog('rootMenu', [
     },
     function (session) {
         // Reload menu
-        //TODO: IMPLEMENT THIS ENDING PROPERLY
-        //TODO: FIND OUT WHAT THAT RELOADACTION DOES
-        // session.replaceDialog('rootMenu');
+        session.replaceDialog('rootMenu');
     }
-]);
-// .reloadAction('showMenu', null, { matches: /^(menu|back)/i });
+]).reloadAction('showMenu', null, { matches: /^(menu|back)/i });
 
 // Flip a coin
 bot.dialog('flipCoinDialog', [
@@ -89,7 +87,7 @@ bot.dialog('rollDiceDialog', [
             var msg = "I rolled:";
             for (var i = 0; i < results.response; i++) {
                 var roll = Math.floor(Math.random() * 6) + 1;
-                msg += ' ' + roll.toString();
+                msg += ' ' + roll.toString(); 
             }
             session.endDialog(msg);
         } else {
@@ -111,7 +109,7 @@ bot.dialog('magicBallDialog', [
 
 // Dictation Practice
 bot.dialog('dictationDialog', [
-    function (session, args) {
+     function (session, args) {
         builder.Prompts.text(session, "What is your question?");
     },
     function (session, results) {
@@ -121,51 +119,52 @@ bot.dialog('dictationDialog', [
 ]);
 
 bot.dialog('pictureDialog', [
-    function (session, args) {
+     function (session, args) {
         builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
-        // builder.Prompts.text(session, "WAT :(");
     },
-    function (session, results, next) {
-        // builder.Prompts.text(session, "WAT 0");
-        var categories = ["Animals", "Travel", "Colours", "Clothes"];
-        var q = categories[results.response.index];
-        var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q='+q+'&count=1&offest=0&mkt=en-us&safeSearch=Strict';
-        var res = request(
-            'GET',
-            url,
-            {
-                headers: {
-                    'Ocp-Apim-Subscription-Key': 'c1c3171e40a84965bd28375ea50f12ef'
-                }   
-            });
-
-        builder.Prompts.text(session, "WAT 1");
-        var obj = JSON.parse(res.getBody());
-        var imageUrl = obj.value[0].contentUrl;
-        msg = new builder.Message(session)
-            .text("Here you go:")
-            .attachments([{
-                contentType: "image/jpeg",
-                contentUrl: imageUrl
-            }]);
-            builder.Prompts.text(session, "WAT 2");
-        session.send(typeof (msg) != "undefined" ? msg : "bye");
-        session.beginDialog('guessDialog');
-    }
-]);
-// .reloadAction('showMenu', null, { matches: /^(menu|back)/i });
-
-bot.dialog('guessDialog', [
-    function (session, args) {
-        builder.Prompts.text(session, 'Enter you guess (comma separated)');
+    function (session, results) {
+    flag = true;
+        var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?';
+        var categories = ["Animals","Travel","Colours","Clothes"];
+        
+        request
+        ({
+            headers: {
+                'Ocp-Apim-Subscription-Key':'c1c3171e40a84965bd28375ea50f12ef'
+            },
+            uri: url,
+         qs: {
+                "q": categories[results.response.index],
+                //"q": "cow",
+                "count": "1",
+                "offset": "0",
+                "mkt": "en-us",
+                "safeSearch": "Strict"
+            },
+            method: 'GET'
+            }, function (err, res, body){
+                //it works!
+                
+                var obj = JSON.parse(body);
+                
+                //var arr = JSON.parse(obj);
+                var imageUrl = obj.value[0].contentUrl;
+                var msg = new builder.Message(session)
+                    .text("Here you go:")
+                    .attachments([{
+                        contentType: "image/jpeg",
+                        contentUrl: imageUrl
+                }]);
+                session.endDialog(msg);   
+                flag = false; 
+        });        
+        session.endDialog("I work....");    
     },
-    function (session, results, next){
-        session.send("You entered " + JSON.stringify(results));
-
+    function (session) {
         // Reload menu
-        // session.replaceDialog('rootMenu');
+        session.replaceDialog('rootMenu');
     }
-])
+]).reloadAction('showMenu', null, { matches: /^(menu|back)/i });
 
 var magicAnswers = [
     "It is certain",
@@ -190,14 +189,13 @@ var magicAnswers = [
     "Very doubtful"
 ];
 
-
 if (useEmulator) {
     var restify = require('restify');
     var server = restify.createServer();
-    server.listen(3978, function () {
+    server.listen(3978, function() {
         console.log('test bot endpont at http://localhost:3978/api/messages');
     });
-    server.post('/api/messages', connector.listen());
+    server.post('/api/messages', connector.listen());    
 } else {
     module.exports = { default: connector.listen() }
 }
