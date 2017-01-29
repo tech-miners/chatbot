@@ -16,8 +16,10 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 
 var bot = new builder.UniversalBot(connector);
 
-bot.dialog('/', [
+bot.dialog('/', [bot.dialog('/', [
     function (session) {
+
+
         session.send("Hello, Let's do some cool stuff today...");
         session.beginDialog('rootMenu');
     },
@@ -55,15 +57,17 @@ bot.dialog('rootMenu', [
     },
     function (session) {
         // Reload menu
-        session.replaceDialog('rootMenu');
+        //TODO: IMPLEMENT THIS ENDING PROPERLY
+        //TODO: FIND OUT WHAT THAT RELOADACTION DOES
+        // session.replaceDialog('rootMenu');
     }
-]).reloadAction('showMenu', null, { matches: /^(menu|back)/i });
+]);
+// .reloadAction('showMenu', null, { matches: /^(menu|back)/i });
 
 // Flip a coin
 bot.dialog('flipCoinDialog', [
     function (session, args) {
         builder.Prompts.choice(session, "Choose heads or tails.", "heads|tails", { listStyle: builder.ListStyle.none })
-        builder.Prompts.text("WAAAAT");
     },
     function (session, results) {
         var flip = Math.random() > 0.5 ? 'heads' : 'tails';
@@ -85,7 +89,7 @@ bot.dialog('rollDiceDialog', [
             var msg = "I rolled:";
             for (var i = 0; i < results.response; i++) {
                 var roll = Math.floor(Math.random() * 6) + 1;
-                msg += ' ' + roll.toString(); 
+                msg += ' ' + roll.toString();
             }
             session.endDialog(msg);
         } else {
@@ -107,7 +111,7 @@ bot.dialog('magicBallDialog', [
 
 // Dictation Practice
 bot.dialog('dictationDialog', [
-     function (session, args) {
+    function (session, args) {
         builder.Prompts.text(session, "What is your question?");
     },
     function (session, results) {
@@ -121,11 +125,9 @@ bot.dialog('pictureDialog', [
         builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
     },
     function (session, results, next) {
-        // session.send('WAT0');
         var categories = ["Animals", "Travel", "Colours", "Clothes"];
         var q = categories[results.response.index];
         var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q='+q+'&count=1&offest=0&mkt=en-us&safeSearch=Strict';
-        
         var res = request(
             'GET',
             url,
@@ -134,7 +136,7 @@ bot.dialog('pictureDialog', [
                     'Ocp-Apim-Subscription-Key': 'c1c3171e40a84965bd28375ea50f12ef'
                 }   
             });
-            // session.send('WAT1');
+
         var obj = JSON.parse(res.getBody());
         var imageUrl = obj.value[0].contentUrl;
         msg = new builder.Message(session)
@@ -143,9 +145,7 @@ bot.dialog('pictureDialog', [
                 contentType: "image/jpeg",
                 contentUrl: imageUrl
             }]);
-            // session.send('WAT2');
         session.send(typeof (msg) != "undefined" ? msg : "bye");
-        
         session.beginDialog('guessDialog');
     }
 ]);
@@ -186,13 +186,14 @@ var magicAnswers = [
     "Very doubtful"
 ];
 
+
 if (useEmulator) {
     var restify = require('restify');
     var server = restify.createServer();
-    server.listen(3978, function() {
+    server.listen(3978, function () {
         console.log('test bot endpont at http://localhost:3978/api/messages');
     });
-    server.post('/api/messages', connector.listen());    
+    server.post('/api/messages', connector.listen());
 } else {
     module.exports = { default: connector.listen() }
 }
