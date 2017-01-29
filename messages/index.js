@@ -148,7 +148,14 @@ bot.dialog('pictureDialog', [
                 var obj = JSON.parse(body);
                 
                 //var arr = JSON.parse(obj);
-                session.endDialog(obj.value[0].contentUrl);   
+                var imageUrl = obj.value[0].contentUrl;
+                var msg = new builder.Message(session)
+                    .text("Here you go:")
+                    .attachments([{
+                        contentType: "image/jpeg",
+                        contentUrl: imageUrl
+                }]);
+                session.endDialog();   
                 flag = false; 
         });        
         session.endDialog("I work....");    
