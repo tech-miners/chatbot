@@ -1,19 +1,33 @@
-// JQuery code 
+// JQuery code to connect to Microsoft Computer API
 
+// Global Key to connect to the API
 var key = "81938164601d4cbc87d2d81ca1683e3f";
-var url = "https://placekitten.com/300/400";
-// url = "http://www.dv247.com/assets/products/212018_l.jpg";
-var body = {"url": url};
+    
+// On document load
+$(function() {
+    var url;
 
-    $(function() {
+    //This function is executed when the submit button is clicked
+    $('#submit').click( function() {
+        url = $('#link').val();
+
+        // Clear the previous image and info
+        $('#image-field').empty();
+        $('#name-field').empty();
+        $('#confidence-field').empty();
+
+        callAPI(url);
+    });
+
+    // Function to connect to the actual API
+    function callAPI(url){
+        var body = {"url": url};
         var params = {
             // Request parameters
             "visualFeatures": "Categories, Tags",
             "details": "Celebrities",
             "language": "en",
         };
-
-        console.log("https://westus.api.cognitive.microsoft.com/vision/v1.0/analyze?" + $.param(params));
 
         $.ajax({
             url: "https://westus.api.cognitive.microsoft.com/vision/v1.0/analyze?" + $.param(params),
@@ -27,20 +41,25 @@ var body = {"url": url};
             data: JSON.stringify(body),
         })
         .done(function(data) {
-            // alert("success");
             console.log("success");
             console.log(data);
+
+            // Update the webpage with the picture of the link
             $('#image-field').append('<img src="' + url + '"/>')
             $('#name-field').append('<h2>What Microsoft thinks this is:</h2>');
 
+            // Loop for every tag the API provides
             for (var i = 0; i < data.tags.length; i++) {
                 $('#name-field').append('<p>' + data.tags[i].name + '</p>');
             }
 
+            // Update webpage with confidence score
             $('#confidence-field').append('<p>Microsoft is ' + data.categories[0].score + ' confident about its results.</p>');
 
         })
+        // If the call is unsucessful
         .fail(function() {
-            alert("error");
+            console.log("error");
         });
-    });
+    }
+});
