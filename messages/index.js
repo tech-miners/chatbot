@@ -103,16 +103,22 @@ bot.dialog('magicBallDialog', [
 
 // Dictation Practice
 bot.dialog('dictationDialog', [
-    function (session){
-        //TODO: Dictation!!!
-        builder.Prompts.text(session, "We will be implemented!");
+     function (session, args) {
+        builder.Prompts.text(session, "What is your question?");
+    },
+    function (session, results) {
+        // Use the SDK's built-in ability to pick a response at random.
+        session.endDialog(magicAnswers);
     }
 ]);
 
 bot.dialog('pictureDialog', [
-    function (session){
-        //TODO: Dictation!!!
-        builder.Prompts.text(session, "We will be implemented!");
+     function (session, args) {
+        builder.Prompts.text(session, "What is your question?");
+    },
+    function (session, results) {
+        // Use the SDK's built-in ability to pick a response at random.
+        session.endDialog(magicAnswers);
     }
 ]);
 
