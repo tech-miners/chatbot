@@ -1,9 +1,8 @@
-"use strict";
+// "use strict";
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
 // var request = require('request');
 var qs = require('querystring');
-var flag = false;
 var request = require('sync-request');
 
 var useEmulator = (process.env.NODE_ENV == 'development');
@@ -19,11 +18,8 @@ var bot = new builder.UniversalBot(connector);
 
 bot.dialog('/', [
     function (session) {
-       
-if (!flag) {
         session.send("Hello, Let's do some cool stuff today...");
         session.beginDialog('rootMenu');
-}
     },
     function (session, results) {
         session.endConversation("Goodbye until next time...");
@@ -127,6 +123,7 @@ bot.dialog('pictureDialog', [
         var categories = ["Animals", "Travel", "Colours", "Clothes"];
         var q = categories[results.response.index];
         var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q='+q+'&count=1&offest=0&mkt=en-us&safeSearch=Strict';
+        session.Prompts.text('WAT0');
         var res = request(
             'GET',
             url,
@@ -135,7 +132,7 @@ bot.dialog('pictureDialog', [
                     'Ocp-Apim-Subscription-Key': 'c1c3171e40a84965bd28375ea50f12ef'
                 }   
             });
-
+            session.Prompts.text('WAT1');
         var obj = JSON.parse(res.getBody());
         var imageUrl = obj.value[0].contentUrl;
         msg = new builder.Message(session)
@@ -144,7 +141,9 @@ bot.dialog('pictureDialog', [
                 contentType: "image/jpeg",
                 contentUrl: imageUrl
             }]);
+            session.Prompts.text('WAT2');
         session.send(typeof (msg) != "undefined" ? msg : "bye");
+        
         session.beginDialog('guessDialog');
     }
 ]);
