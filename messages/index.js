@@ -4,6 +4,7 @@ var botbuilder_azure = require("botbuilder-azure");
 var request = require('request');
 var qs = require('querystring');
 var flag = false;
+var request = require('sync-request');
 
 var useEmulator = (process.env.NODE_ENV == 'development');
 
@@ -119,52 +120,47 @@ bot.dialog('dictationDialog', [
 ]);
 
 bot.dialog('pictureDialog', [
-     function (session, args) {
+    function (session, args) {
         builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
     },
-    function (session, results) {
-    flag = true;
-        var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?';
-        var categories = ["Animals","Travel","Colours","Clothes"];
-        
-        request
-        ({
-            headers: {
-                'Ocp-Apim-Subscription-Key':'c1c3171e40a84965bd28375ea50f12ef'
-            },
-            uri: url,
-         qs: {
-                "q": categories[results.response.index],
-                //"q": "cow",
-                "count": "1",
-                "offset": "0",
-                "mkt": "en-us",
-                "safeSearch": "Strict"
-            },
-            method: 'GET'
-            }, function (err, res, body){
-                //it works!
-                
-                var obj = JSON.parse(body);
-                
-                //var arr = JSON.parse(obj);
-                var imageUrl = obj.value[0].contentUrl;
-                var msg = new builder.Message(session)
-                    .text("Here you go:")
-                    .attachments([{
-                        contentType: "image/jpeg",
-                        contentUrl: imageUrl
-                }]);
-                session.endDialog(msg);   
-                flag = false; 
-        });        
-        session.endDialog("I work....");    
-    },
-    function (session) {
-        // Reload menu
-        session.replaceDialog('rootMenu');
+    function (session, results, next) {
+        var categories = ["Animals", "Travel", "Colours", "Clothes"];
+        var q = categories[results.response.index];
+        var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q='+q+'&count=1&offest=0&mkt=en-us&safeSearch=Strict';
+        var res = request(
+            'GET',
+            url,
+            {
+                headers: {
+                    'Ocp-Apim-Subscription-Key': 'c1c3171e40a84965bd28375ea50f12ef'
+                }   
+            });
+
+        var obj = JSON.parse(res.getBody());
+        var imageUrl = obj.value[0].contentUrl;
+        msg = new builder.Message(session)
+            .text("Here you go:")
+            .attachments([{
+                contentType: "image/jpeg",
+                contentUrl: imageUrl
+            }]);
+        session.send(typeof (msg) != "undefined" ? msg : "bye");
+        session.beginDialog('guessDialog');
     }
-]).reloadAction('showMenu', null, { matches: /^(menu|back)/i });
+]);
+// .reloadAction('showMenu', null, { matches: /^(menu|back)/i });
+
+bot.dialog('guessDialog', [
+    function (session, args) {
+        builder.Prompts.text(session, 'Enter you guess (comma separated)');
+    },
+    function (session, results, next){
+        session.send("You entered " + JSON.stringify(results));
+
+        // Reload menu
+        // session.replaceDialog('rootMenu');
+    }
+])
 
 var magicAnswers = [
     "It is certain",
