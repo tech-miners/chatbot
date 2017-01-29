@@ -122,7 +122,7 @@ bot.dialog('pictureDialog', [
         builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
     },
     function (session, results) {
-         var msg;
+        var msg;
         var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?';
         var categories = ["Animals","Travel","Colours","Clothes"];
         
@@ -155,7 +155,7 @@ bot.dialog('pictureDialog', [
                     contentUrl: imageUrl
             }]);
         });        
-        session.endDialog(msg);    
+        session.endDialog("ysdf");    
     },
     function (session) {
         // Reload menu
