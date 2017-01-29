@@ -1,8 +1,8 @@
 "use strict";
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
-var utils = require(utils);
-var hello = require(jQuery);
+var request = require('request');
+
 
 var useEmulator = (process.env.NODE_ENV == 'development');
 
@@ -119,7 +119,27 @@ bot.dialog('pictureDialog', [
         builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
     },
     function (session, results) {
-        session.endDialog(imageSearch(results.response.index));    
+
+        var url = "https://api.cognitive.microsoft.com/bing/v5.0/images/search?";
+        
+        request({
+            headers: {
+                "Ocp-Apim-Subscription-Key":"c1c3171e40a84965bd28375ea50f12ef"
+            },
+            uri: url,
+            body: {
+                "q": imageSearch(results.response.index),
+                "count": "1",
+                "offset": "0",
+                "mkt": "en-us",
+                "safeSearch": "Strict"
+            },
+            method: 'GET'
+            }, function (err, res, body){
+                //it works!
+                session.endDialog("WAT");    
+        });
+        session.endDialog("I work....");    
     },
     function (session) {
         // Reload menu

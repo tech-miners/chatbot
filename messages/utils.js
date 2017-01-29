@@ -1,5 +1,3 @@
-
-
 function imageSearch(q) {
         var params = {
             // Request parameters
