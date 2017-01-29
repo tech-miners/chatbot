@@ -109,13 +109,12 @@ bot.dialog('dictationDialog', [
     }
 ]);
 
-// Picture game
-bot.dialog('pictureDialog', {
-    //TODO: MORE FREQUENT COMMITTSSSSSS
-    function (session, args){
-        //session
+bot.dialog('pictureDialog', [
+    function (session){
+        //TODO: Dictation!!!
+        builder.Prompts.text(session, "We will be implemented!");
     }
-});
+]);
 
 var magicAnswers = [
     "It is certain",
