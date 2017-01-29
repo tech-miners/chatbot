@@ -1,7 +1,7 @@
 "use strict";
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
-var request = require('request');
+// var request = require('request');
 var qs = require('querystring');
 var flag = false;
 var request = require('sync-request');
