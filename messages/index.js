@@ -118,6 +118,7 @@ bot.dialog('dictationDialog', [
 bot.dialog('pictureDialog', [
     function (session, args) {
         builder.Prompts.text('Test');
+        /
         builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
     },
     function (session, results, next) {
