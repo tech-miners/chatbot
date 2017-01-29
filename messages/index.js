@@ -122,7 +122,7 @@ bot.dialog('pictureDialog', [
         builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
     },
     function (session, results) {
-        var msg;
+        var msg = "I work";
         var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?';
         var categories = ["Animals","Travel","Colours","Clothes"];
         
@@ -132,7 +132,7 @@ bot.dialog('pictureDialog', [
                 'Ocp-Apim-Subscription-Key':'c1c3171e40a84965bd28375ea50f12ef'
             },
             uri: url,
-            qs: {
+         qs: {
                 "q": categories[results.response.index],
                 //"q": "cow",
                 "count": "1",
@@ -141,21 +141,22 @@ bot.dialog('pictureDialog', [
                 "safeSearch": "Strict"
             },
             method: 'GET'
-        }, function (err, res, body){
-            //it works!
-            
-            var obj = JSON.parse(body);
-            
-            //var arr = JSON.parse(obj);
-            var imageUrl = obj.value[0].contentUrl;
-            msg = new builder.Message(session)
-                .text("Here you go:")
-                .attachments([{
-                    contentType: "image/jpeg",
-                    contentUrl: imageUrl
-            }]);
+            }, function (err, res, body){
+                //it works!
+                
+                var obj = JSON.parse(body);
+                
+                //var arr = JSON.parse(obj);
+                var imageUrl = obj.value[0].contentUrl;
+                msg = new builder.Message(session)
+                    .text("Here you go:")
+                    .attachments([{
+                        contentType: "image/jpeg",
+                        contentUrl: imageUrl
+                }]);
+                session.endDialog(msg);   
         });        
-        session.endDialog("ysdf");    
+        session.endDialog(msg);    
     },
     function (session) {
         // Reload menu
