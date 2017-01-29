@@ -63,7 +63,7 @@ bot.dialog('rootMenu', [
 bot.dialog('flipCoinDialog', [
     function (session, args) {
         builder.Prompts.choice(session, "Choose heads or tails.", "heads|tails", { listStyle: builder.ListStyle.none })
-        session.Prompts.text("WAAAAT");
+        builder.Prompts.text("WAAAAT");
     },
     function (session, results) {
         var flip = Math.random() > 0.5 ? 'heads' : 'tails';
