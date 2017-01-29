@@ -123,10 +123,10 @@ bot.dialog('dictationDialog', [
 bot.dialog('pictureDialog', [
     function (session, args) {
         builder.Prompts.choice(session, "Choose an option:", 'Animals|Travel|Colours|Clothes');
-        builder.Prompts.text(session, "WAT :(");
+        // builder.Prompts.text(session, "WAT :(");
     },
     function (session, results, next) {
-        builder.Prompts.text(session, "WAT 0");
+        // builder.Prompts.text(session, "WAT 0");
         var categories = ["Animals", "Travel", "Colours", "Clothes"];
         var q = categories[results.response.index];
         var url = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?q='+q+'&count=1&offest=0&mkt=en-us&safeSearch=Strict';
